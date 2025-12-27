@@ -1,0 +1,6 @@
+# GDPR Manager - robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://gdpr-manager.cz/sitemap.xml

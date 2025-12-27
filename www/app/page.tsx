@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Zap, Lock, FileText, ArrowRight } from 'lucide-react';
+import { Zap, Lock, FileText, ArrowRight, ChevronDown } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { Footer } from '@/components/Footer';
 import { DonateModal } from '@/components/DonateModal';
@@ -41,9 +41,9 @@ export default function Home() {
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-6 leading-tight">
-            GDPR dokumentace
+            Generátor GDPR dokumentace
             <br />
-            <span className="text-emerald-600">za 5 minut</span>
+            <span className="text-emerald-600">pro firmy a OSVČ</span>
           </h1>
 
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
@@ -108,7 +108,7 @@ export default function Home() {
       </section>
 
       {/* Dokumenty */}
-      <section className="py-16 px-4">
+      <section id="dokumenty" className="py-16 px-4 scroll-mt-20">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-bold text-center text-primary mb-4">
             Jaké dokumenty získáte?
@@ -181,6 +181,84 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="py-16 px-4 bg-muted/50 scroll-mt-20">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-center text-primary mb-4">
+            Časté dotazy o GDPR
+          </h2>
+          <p className="text-center text-muted-foreground mb-10">
+            Odpovědi na nejčastější otázky o GDPR dokumentaci
+          </p>
+
+          <div className="space-y-4">
+            <details className="group bg-background rounded-lg border p-4">
+              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold">
+                Musím mít GDPR dokumentaci jako OSVČ?
+                <ChevronDown className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" />
+              </summary>
+              <p className="mt-4 text-muted-foreground">
+                Ano, pokud zpracováváte osobní údaje zákazníků, klientů nebo zaměstnanců. 
+                GDPR se vztahuje na všechny podnikatele bez ohledu na velikost – od živnostníků 
+                až po velké korporace. Povinností je mít zásady zpracování osobních údajů 
+                a informovat subjekty údajů o tom, jak s jejich daty nakládáte.
+              </p>
+            </details>
+
+            <details className="group bg-background rounded-lg border p-4">
+              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold">
+                Je generátor opravdu zdarma?
+                <ChevronDown className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" />
+              </summary>
+              <p className="mt-4 text-muted-foreground">
+                Ano, 100% zdarma bez registrace a bez skrytých poplatků. Všechny dokumenty 
+                můžete stáhnout v PDF i DOCX formátu. Projekt vznikl jako pomoc malým firmám 
+                a OSVČ, kteří potřebují splnit GDPR bez vysokých nákladů na právníky.
+              </p>
+            </details>
+
+            <details className="group bg-background rounded-lg border p-4">
+              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold">
+                Jsou dokumenty právně závazné?
+                <ChevronDown className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" />
+              </summary>
+              <p className="mt-4 text-muted-foreground">
+                Dokumenty jsou připraveny podle aktuální legislativy GDPR a odpovídají 
+                požadavkům Úřadu pro ochranu osobních údajů. Pro specifické právní rady 
+                nebo složitější případy zpracování doporučujeme konzultaci s právníkem 
+                specializujícím se na ochranu osobních údajů.
+              </p>
+            </details>
+
+            <details className="group bg-background rounded-lg border p-4">
+              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold">
+                Potřebuji GDPR dokumentaci pro e-shop?
+                <ChevronDown className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" />
+              </summary>
+              <p className="mt-4 text-muted-foreground">
+                Rozhodně ano. E-shopy zpracovávají velké množství osobních údajů – jména, 
+                adresy, e-maily, platební údaje. Musíte mít na webu zveřejněné zásady 
+                zpracování osobních údajů a správně informovat zákazníky při objednávce. 
+                Náš generátor vytvoří všechny potřebné dokumenty přizpůsobené pro e-commerce.
+              </p>
+            </details>
+
+            <details className="group bg-background rounded-lg border p-4">
+              <summary className="flex justify-between items-center cursor-pointer list-none font-semibold">
+                Jak často musím dokumenty aktualizovat?
+                <ChevronDown className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform" />
+              </summary>
+              <p className="mt-4 text-muted-foreground">
+                Dokumenty byste měli aktualizovat vždy, když se změní způsob, jakým 
+                zpracováváte osobní údaje – například přidáte nový marketingový nástroj, 
+                změníte poskytovatele hostingu nebo rozšíříte služby. Doporučujeme také 
+                pravidelnou roční revizi.
+              </p>
+            </details>
           </div>
         </div>
       </section>
