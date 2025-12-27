@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  gdpr-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: gdpr_app
+    restart: unless-stopped
+    volumes:
+      - ./www:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+    networks:
+      - gdpr_network
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      # Dev - gdpr.yrx.cz
+      - "traefik.http.routers.gdpr.rule=Host(`gdpr.yrx.cz`)"
+      - "traefik.http.routers.gdpr.entrypoints=websecure"
+      - "traefik.http.routers.gdpr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.gdpr.service=gdpr-service"
+      # Service
+      - "traefik.http.services.gdpr-service.loadbalancer.server.port=3000"
+
+networks:
+  gdpr_network:
+    driver: bridge
+  traefik_network:
+    external: true

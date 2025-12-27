@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  gdpr-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gdpr_app
+    restart: unless-stopped
+    networks:
+      - gdpr_network
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      # Dev - gdpr.yrx.cz
+      - "traefik.http.routers.gdpr.rule=Host(`gdpr.yrx.cz`)"
+      - "traefik.http.routers.gdpr.entrypoints=websecure"
+      - "traefik.http.routers.gdpr.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.gdpr.service=gdpr-service"
+      # Prod - gdpr-manager.cz
+      - "traefik.http.routers.gdpr_prod.rule=Host(`gdpr-manager.cz`)"
+      - "traefik.http.routers.gdpr_prod.entrypoints=websecure"
+      - "traefik.http.routers.gdpr_prod.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.gdpr_prod.service=gdpr-service"
+      # Service
+      - "traefik.http.services.gdpr-service.loadbalancer.server.port=3000"
+      # Redirect gdprmanager.cz -> gdpr-manager.cz
+      - "traefik.http.middlewares.gdpr-redirect.redirectregex.regex=^https://gdprmanager.cz/(.*)"
+      - "traefik.http.middlewares.gdpr-redirect.redirectregex.replacement=https://gdpr-manager.cz/$${1}"
+      - "traefik.http.middlewares.gdpr-redirect.redirectregex.permanent=true"
+      - "traefik.http.routers.gdpr_redirect.rule=Host(`gdprmanager.cz`)"
+      - "traefik.http.routers.gdpr_redirect.entrypoints=websecure"
+      - "traefik.http.routers.gdpr_redirect.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.gdpr_redirect.middlewares=gdpr-redirect"
+      - "traefik.http.routers.gdpr_redirect.service=gdpr-service"
+
+networks:
+  gdpr_network:
+    driver: bridge
+  traefik_network:
+    external: true

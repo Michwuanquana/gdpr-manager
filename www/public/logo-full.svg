@@ -1,0 +1,45 @@
+<svg viewBox="0 0 280 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldGradient" x1="30" y1="4" x2="30" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Štít ikona -->
+  <path
+    d="M30 4 L52 12 L52 28 Q52 44 30 54 Q8 44 8 28 L8 12 Z"
+    fill="url(#shieldGradient)"
+  />
+  
+  <!-- Checkmark -->
+  <path
+    d="M21 30 L27 36 L39 24"
+    stroke="white"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  
+  <!-- Wordmark: GDPR Manager -->
+  <!-- GDPR - bold -->
+  <text 
+    x="68" 
+    y="38" 
+    font-family="Inter, system-ui, sans-serif" 
+    font-size="24" 
+    font-weight="700" 
+    fill="#0F172A"
+  >GDPR</text>
+  
+  <!-- Manager - regular -->
+  <text 
+    x="138" 
+    y="38" 
+    font-family="Inter, system-ui, sans-serif" 
+    font-size="24" 
+    font-weight="400" 
+    fill="#64748B"
+  >Manager</text>
+</svg>
