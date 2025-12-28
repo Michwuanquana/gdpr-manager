@@ -1,5 +1,11 @@
 # Infrastruktura GDPR Manager
 
+## ⚠️ PRAVIDLA PRO CLAUDE
+
+1. **Neptej se zbytečně, ale v případě nejasností se ZEPTEJ** - Tato infrastruktura je složitá a matoucí (IPv4/IPv6, VPN, port forwarding). Když si nejsi jistý, přeruš task a zeptej se uživatele, pak navázej.
+2. **Neopravuj uživatele** - Pokud si myslíš, že se uživatel spletl, raději se zeptej.
+3. **Testuj správně** - Když testuješ IPv4 konektivitu, používej `-4` flag, jinak může jít přes IPv6.
+
 ## Servery
 
 ### oxana.yrx.cz (tento server)
