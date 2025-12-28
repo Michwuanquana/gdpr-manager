@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 'use client';
 
 import { Progress } from '@/components/ui/progress';
@@ -9,11 +17,12 @@ interface WizardProgressProps {
 }
 
 const stepLabels = [
-  'Základní info',
+  'Firma',
   'Podnikání',
-  'Sbíraná data',
+  'Data',
   'Účely',
   'Příjemci',
+  'Kontrola',
 ];
 
 export function WizardProgress({ currentStep, totalSteps }: WizardProgressProps) {

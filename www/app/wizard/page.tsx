@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -5,20 +13,22 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { WizardProgress } from '@/components/wizard/WizardProgress';
+import { WizardLoadingSkeleton } from '@/components/wizard/WizardLoadingSkeleton';
 import { Step1Company } from '@/components/wizard/Step1Company';
 import { Step2Business } from '@/components/wizard/Step2Business';
 import { Step3Data } from '@/components/wizard/Step3Data';
 import { Step4Purposes } from '@/components/wizard/Step4Purposes';
 import { Step5Recipients } from '@/components/wizard/Step5Recipients';
+import { PreGenerationChecklist } from '@/components/wizard/PreGenerationChecklist';
 import { DocumentsResult } from '@/components/documents/DocumentsResult';
 import { WizardData, defaultWizardData } from '@/lib/types';
-import { FlaskConical, ChevronLeft, ChevronRight, Coffee } from 'lucide-react';
+import { FlaskConical, ChevronLeft, ChevronRight, Coffee, X, RotateCcw } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { Footer } from '@/components/Footer';
 import { DonateModal } from '@/components/DonateModal';
 
 const STORAGE_KEY = 'gdpr-wizard-data';
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 // Testovací data pro dev prostředí
 const testData: WizardData = {
@@ -63,6 +73,12 @@ const testData: WizardData = {
     thirdCountryTransfer: true,
     thirdCountryName: 'USA',
   },
+  hasDpo: false,
+  consentWithdrawal: {
+    methods: ['email', 'unsubscribe_link', 'web_form'],
+    webFormUrl: 'https://www.testovacifirma.cz/odhlasit',
+  },
+  retentionSettings: {},
 };
 
 export default function WizardPage() {
@@ -72,6 +88,8 @@ export default function WizardPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isDev, setIsDev] = useState(false);
   const [showDonateModal, setShowDonateModal] = useState(false);
+  const [showCacheBanner, setShowCacheBanner] = useState(false);
+  const [cachedDate, setCachedDate] = useState<string | null>(null);
 
 
   // Detekce dev prostředí
@@ -86,8 +104,25 @@ export default function WizardPage() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setData({ ...defaultWizardData, ...parsed.data });
-        setCurrentStep(parsed.step || 0);
+        // Kontrola zda jsou nějaká data (ne prázdný formulář)
+        const hasData = parsed.data?.company?.name?.trim() || 
+                        parsed.data?.company?.ico?.trim() ||
+                        parsed.step > 0;
+        if (hasData) {
+          setData({ ...defaultWizardData, ...parsed.data });
+          setCurrentStep(parsed.step || 0);
+          setShowCacheBanner(true);
+          // Formátování data uložení
+          if (parsed.savedAt) {
+            const date = new Date(parsed.savedAt);
+            setCachedDate(date.toLocaleString('cs-CZ', {
+              day: 'numeric',
+              month: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            }));
+          }
+        }
       } catch (e) {
         console.error('Chyba při načítání uložených dat:', e);
       }
@@ -98,7 +133,11 @@ export default function WizardPage() {
   // Uložení do localStorage
   useEffect(() => {
     if (isLoaded && !isComplete) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, step: currentStep }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ 
+        data, 
+        step: currentStep,
+        savedAt: new Date().toISOString()
+      }));
     }
   }, [data, currentStep, isLoaded, isComplete]);
 
@@ -126,6 +165,14 @@ export default function WizardPage() {
     setData(testData);
   };
 
+  const handleClearCache = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setData(defaultWizardData);
+    setCurrentStep(0);
+    setShowCacheBanner(false);
+    setCachedDate(null);
+  };
+
   const canProceed = () => {
     switch (currentStep) {
       case 0:
@@ -143,17 +190,16 @@ export default function WizardPage() {
         return Object.values(data.purposes).some((v) => v === true);
       case 4:
         return true;
+      case 5:
+        // Checklist - always true, errors are shown in the component
+        return true;
       default:
         return true;
     }
   };
 
   if (!isLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-primary">Načítání...</div>
-      </div>
-    );
+    return <WizardLoadingSkeleton />;
   }
 
   if (isComplete) {
@@ -224,12 +270,50 @@ export default function WizardPage() {
 
         <WizardProgress currentStep={currentStep} totalSteps={TOTAL_STEPS} />
 
+        {/* Cache notification banner */}
+        {showCacheBanner && (
+          <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="flex items-start gap-3">
+              <RotateCcw className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-blue-800">
+                  <strong>Rozpracovaný formulář načten</strong>
+                  {cachedDate && (
+                    <span className="text-blue-600 font-normal"> (uloženo {cachedDate})</span>
+                  )}
+                </p>
+                <p className="text-xs text-blue-600 mt-0.5">
+                  Data jsou uložena pouze ve vašem prohlížeči a nikam se neodesílají.
+                </p>
+              </div>
+              <div className="flex gap-2 flex-shrink-0">
+                <button
+                  onClick={handleClearCache}
+                  className="text-xs text-blue-700 hover:text-blue-900 underline"
+                >
+                  Začít znovu
+                </button>
+                <button
+                  onClick={() => setShowCacheBanner(false)}
+                  className="text-blue-400 hover:text-blue-600"
+                  aria-label="Zavřít"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <Card className="shadow-lg">
           <CardContent className="pt-6">
             {currentStep === 0 && (
               <Step1Company
                 data={data.company}
                 onChange={(company) => setData({ ...data, company })}
+                hasDpo={data.hasDpo}
+                dpo={data.dpo}
+                onDpoChange={(hasDpo, dpo) => setData({ ...data, hasDpo, dpo })}
               />
             )}
             {currentStep === 1 && (
@@ -249,6 +333,12 @@ export default function WizardPage() {
                 data={data.purposes}
                 onChange={(purposes) => setData({ ...data, purposes })}
                 hasEmployees={data.business.hasEmployees}
+                consentWithdrawal={data.consentWithdrawal}
+                onConsentWithdrawalChange={(consentWithdrawal) => setData({ ...data, consentWithdrawal })}
+                companyEmail={data.company.email}
+                companyAddress={data.company.address}
+                retentionSettings={data.retentionSettings}
+                onRetentionChange={(retentionSettings) => setData({ ...data, retentionSettings })}
               />
             )}
             {currentStep === 4 && (
@@ -257,7 +347,20 @@ export default function WizardPage() {
                 onChange={(recipients) => setData({ ...data, recipients })}
               />
             )}
+            {currentStep === 5 && (
+              <PreGenerationChecklist
+                data={data}
+                onBack={handleBack}
+                onGenerate={handleNext}
+                onGoToStep={(step) => {
+                  setCurrentStep(step);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            )}
 
+            {/* Navigation - hidden on checklist step (has its own) */}
+            {currentStep !== 5 && (
             <div className="flex justify-between mt-8 pt-6 border-t">
               <Button
                 variant="outline"
@@ -280,11 +383,12 @@ export default function WizardPage() {
                   </Button>
                 )}
                 <Button onClick={handleNext} disabled={!canProceed()} className="gap-2">
-                  {currentStep === TOTAL_STEPS - 1 ? 'Vygenerovat dokumenty' : 'Pokračovat'}
-                  {currentStep !== TOTAL_STEPS - 1 && <ChevronRight className="w-4 h-4" />}
+                  {currentStep === TOTAL_STEPS - 2 ? 'Zkontrolovat' : 'Pokračovat'}
+                  <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
             </div>
+            )}
           </CardContent>
         </Card>
 

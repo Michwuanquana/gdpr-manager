@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 import Link from 'next/link';
 
 export function Footer() {
@@ -32,6 +40,11 @@ export function Footer() {
               <li>
                 <Link href="/wizard" className="text-muted-foreground hover:text-primary transition-colors">
                   Generátor dokumentů
+                </Link>
+              </li>
+              <li>
+                <Link href="/audit" className="text-muted-foreground hover:text-primary transition-colors">
+                  Právní ověření
                 </Link>
               </li>
               <li>
@@ -76,7 +89,15 @@ export function Footer() {
         {/* Spodní lišta */}
         <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} GDPR Manager. Všechna práva vyhrazena.
+            Open source · MIT License ·{' '}
+            <a 
+              href="https://github.com/Michwuanquana/gdpr-manager" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
+            >
+              GitHub
+            </a>
           </p>
           <p className="text-xs text-center md:text-right">
             Dokumenty jsou generovány na základě vašich odpovědí. 

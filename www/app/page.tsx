@@ -1,16 +1,32 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Zap, Lock, FileText, ArrowRight, ChevronDown } from 'lucide-react';
+import { Zap, Lock, FileText, ArrowRight, ChevronDown, Loader2 } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { Footer } from '@/components/Footer';
 import { DonateModal } from '@/components/DonateModal';
 
 export default function Home() {
   const [showDonateModal, setShowDonateModal] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const router = useRouter();
+
+  const handleStartWizard = () => {
+    setIsNavigating(true);
+    router.push('/wizard');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -51,12 +67,24 @@ export default function Home() {
             k použití. Pro české firmy, živnostníky a weby.
           </p>
 
-          <Link href="/wizard">
-            <Button size="lg" className="text-lg px-8 py-6 h-auto gap-2">
-              Začít generovat dokumenty
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </Link>
+          <Button 
+            size="lg" 
+            className="text-lg px-8 py-6 h-auto gap-2"
+            onClick={handleStartWizard}
+            disabled={isNavigating}
+          >
+            {isNavigating ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Načítání...
+              </>
+            ) : (
+              <>
+                Začít generovat dokumenty
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
+          </Button>
         </div>
       </section>
 

@@ -1,10 +1,24 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 'use client';
 
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DataRecipients } from '@/lib/types';
-import { AlertTriangle } from 'lucide-react';
+import { DataRecipients, ThirdCountryTransfer } from '@/lib/types';
+import { 
+  THIRD_COUNTRY_SERVICES, 
+  SERVICE_CATEGORY_LABELS,
+  ThirdCountryService 
+} from '@/lib/third-country-services';
+import { AlertTriangle, Globe, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface Step5RecipientsProps {
   data: DataRecipients;
@@ -12,6 +26,54 @@ interface Step5RecipientsProps {
 }
 
 export function Step5Recipients({ data, onChange }: Step5RecipientsProps) {
+  const [showAllServices, setShowAllServices] = useState(false);
+
+  // Pomocná funkce pro přidání/odebrání služby třetí země
+  const toggleThirdCountryService = (service: ThirdCountryService, checked: boolean) => {
+    const currentServices = data.thirdCountryServices || [];
+    
+    if (checked) {
+      const newTransfer: ThirdCountryTransfer = {
+        serviceId: service.id,
+        serviceName: service.name,
+        provider: service.provider,
+        country: service.country,
+        safeguard: service.safeguard,
+        safeguardDescription: service.safeguardDescription,
+      };
+      onChange({
+        ...data,
+        thirdCountryTransfer: true,
+        thirdCountryServices: [...currentServices, newTransfer],
+      });
+    } else {
+      const newServices = currentServices.filter(s => s.serviceId !== service.id);
+      onChange({
+        ...data,
+        thirdCountryTransfer: newServices.length > 0 || !!data.thirdCountryName,
+        thirdCountryServices: newServices,
+      });
+    }
+  };
+
+  const isServiceSelected = (serviceId: string): boolean => {
+    return data.thirdCountryServices?.some(s => s.serviceId === serviceId) || false;
+  };
+
+  // Seskupit služby podle kategorie
+  const servicesByCategory = THIRD_COUNTRY_SERVICES.reduce((acc, service) => {
+    if (!acc[service.category]) {
+      acc[service.category] = [];
+    }
+    acc[service.category].push(service);
+    return acc;
+  }, {} as Record<string, ThirdCountryService[]>);
+
+  // Populární služby pro rychlý výběr
+  const popularServices = THIRD_COUNTRY_SERVICES.filter(s => 
+    ['google_analytics', 'mailchimp', 'stripe', 'aws', 'meta_ads'].includes(s.id)
+  );
+
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
@@ -146,8 +208,8 @@ export function Step5Recipients({ data, onChange }: Step5RecipientsProps) {
           )}
         </div>
 
-        {/* Třetí země */}
-        <div className="border rounded-lg p-4 space-y-3">
+        {/* Třetí země - rozšířená sekce */}
+        <div className="border rounded-lg p-4 space-y-4">
           <div className="flex items-start space-x-3">
             <Checkbox
               id="thirdCountryTransfer"
@@ -157,12 +219,14 @@ export function Step5Recipients({ data, onChange }: Step5RecipientsProps) {
                   ...data,
                   thirdCountryTransfer: checked === true,
                   thirdCountryName: checked ? data.thirdCountryName : undefined,
+                  thirdCountryServices: checked ? data.thirdCountryServices : [],
                 })
               }
               className="mt-1"
             />
             <div>
-              <Label htmlFor="thirdCountryTransfer" className="font-medium cursor-pointer">
+              <Label htmlFor="thirdCountryTransfer" className="font-medium cursor-pointer flex items-center gap-2">
+                <Globe className="w-4 h-4" />
                 Předáváme data mimo EU/EHP
               </Label>
               <p className="text-sm text-muted-foreground mt-1">
@@ -170,13 +234,140 @@ export function Step5Recipients({ data, onChange }: Step5RecipientsProps) {
               </p>
             </div>
           </div>
+
           {data.thirdCountryTransfer && (
-            <Input
-              placeholder="Do jaké země? (např. USA)"
-              value={data.thirdCountryName || ''}
-              onChange={(e) => onChange({ ...data, thirdCountryName: e.target.value })}
-              className="ml-7"
-            />
+            <div className="ml-7 space-y-4">
+              {/* Rychlý výběr populárních služeb */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Rychlý výběr běžných služeb:</Label>
+                <div className="flex flex-wrap gap-2">
+                  {popularServices.map((service) => {
+                    const isSelected = isServiceSelected(service.id);
+                    return (
+                      <button
+                        key={service.id}
+                        type="button"
+                        onClick={() => toggleThirdCountryService(service, !isSelected)}
+                        className={`px-3 py-1.5 text-sm rounded-full border transition-all ${
+                          isSelected
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-muted hover:bg-muted/80 border-border'
+                        }`}
+                      >
+                        {service.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Rozbalovací seznam všech služeb */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setShowAllServices(!showAllServices)}
+                  className="flex items-center gap-2 text-sm text-primary hover:underline"
+                >
+                  {showAllServices ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {showAllServices ? 'Skrýt' : 'Zobrazit'} všechny služby ({THIRD_COUNTRY_SERVICES.length})
+                </button>
+
+                {showAllServices && (
+                  <div className="mt-3 space-y-4">
+                    {Object.entries(servicesByCategory).map(([category, services]) => (
+                      <div key={category}>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                          {SERVICE_CATEGORY_LABELS[category]}
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          {services.map((service) => {
+                            const isSelected = isServiceSelected(service.id);
+                            const isEU = service.safeguard === 'adequacy';
+                            return (
+                              <div
+                                key={service.id}
+                                className={`border rounded-lg p-3 transition-all ${
+                                  isSelected
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-border hover:border-primary/30'
+                                }`}
+                              >
+                                <div className="flex items-start gap-2">
+                                  <Checkbox
+                                    id={`service-${service.id}`}
+                                    checked={isSelected}
+                                    onCheckedChange={(checked) => 
+                                      toggleThirdCountryService(service, checked === true)
+                                    }
+                                    className="mt-0.5"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <Label 
+                                      htmlFor={`service-${service.id}`}
+                                      className="font-medium cursor-pointer text-sm flex items-center gap-2"
+                                    >
+                                      {service.name}
+                                      {isEU && (
+                                        <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
+                                          EU
+                                        </span>
+                                      )}
+                                    </Label>
+                                    <p className="text-xs text-muted-foreground truncate">
+                                      {service.provider}
+                                    </p>
+                                    {isSelected && (
+                                      <p className="text-xs text-primary mt-1">
+                                        {service.safeguardDescription}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Vybrané služby */}
+              {(data.thirdCountryServices?.length ?? 0) > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <h4 className="text-sm font-medium text-blue-900 mb-2">
+                    Vybrané služby ({data.thirdCountryServices?.length}):
+                  </h4>
+                  <div className="space-y-2">
+                    {data.thirdCountryServices?.map((service) => (
+                      <div key={service.serviceId} className="text-sm text-blue-800 flex items-start gap-2">
+                        <span>•</span>
+                        <div>
+                          <strong>{service.serviceName}</strong> ({service.provider})
+                          <br />
+                          <span className="text-xs">{service.country} – {service.safeguardDescription}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Vlastní země */}
+              <div>
+                <Label htmlFor="thirdCountryName" className="text-sm">
+                  Jiná služba/země (volitelně):
+                </Label>
+                <Input
+                  id="thirdCountryName"
+                  placeholder="Např. vlastní server v Kanadě"
+                  value={data.thirdCountryName || ''}
+                  onChange={(e) => onChange({ ...data, thirdCountryName: e.target.value })}
+                  className="mt-1"
+                />
+              </div>
+            </div>
           )}
         </div>
       </div>

@@ -1,16 +1,26 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 'use client';
 
+import { ReactElement } from 'react';
 import { WizardData } from '@/lib/types';
 import {
   generatePrivacyPolicy,
   generateInfoObligation,
   generateConsentForm,
   generateProcessingRecords,
+  generateIncidentProcedure,
 } from '@/lib/document-generator';
 
 interface DocumentPreviewProps {
   data: WizardData;
-  documentType: 'privacy' | 'info' | 'consent' | 'records';
+  documentType: 'privacy' | 'info' | 'consent' | 'records' | 'incidents';
 }
 
 export function DocumentPreview({ data, documentType }: DocumentPreviewProps) {
@@ -24,6 +34,8 @@ export function DocumentPreview({ data, documentType }: DocumentPreviewProps) {
         return generateConsentForm(data);
       case 'records':
         return generateProcessingRecords(data);
+      case 'incidents':
+        return generateIncidentProcedure(data);
     }
   };
 
@@ -32,7 +44,7 @@ export function DocumentPreview({ data, documentType }: DocumentPreviewProps) {
   // Jednoduchý Markdown renderer
   const renderMarkdown = (md: string) => {
     const lines = md.split('\n');
-    const elements: JSX.Element[] = [];
+    const elements: ReactElement[] = [];
     let listItems: string[] = [];
 
     const flushList = () => {
@@ -138,7 +150,7 @@ export function DocumentPreview({ data, documentType }: DocumentPreviewProps) {
   };
 
   return (
-    <div className="prose prose-sm max-w-none text-foreground">
+    <div className="prose prose-sm max-w-none text-foreground font-serif">
       {renderMarkdown(markdown)}
     </div>
   );

@@ -82,3 +82,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Legal document typography - design system */
+@layer components {
+  .prose-legal {
+    @apply font-serif leading-relaxed;
+  }
+  .prose-legal h1,
+  .prose-legal h2,
+  .prose-legal h3 {
+    @apply font-sans;
+  }
+}

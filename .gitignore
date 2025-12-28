@@ -32,3 +32,6 @@ Thumbs.db
 # Misc
 *.pem
 *.tsbuildinfo
+
+# Instructions (internal docs)
+instructions/

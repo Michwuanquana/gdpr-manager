@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 // Typy pro GDPR Manager Wizard
 
 export interface CompanyInfo {
@@ -40,6 +48,33 @@ export interface ProcessingPurposes {
   accounting: boolean;
 }
 
+// Způsoby odvolání souhlasu (čl. 7 odst. 3 GDPR)
+export type WithdrawalMethod = 'email' | 'unsubscribe_link' | 'web_form' | 'phone' | 'post' | 'in_person';
+
+export interface ConsentWithdrawal {
+  methods: WithdrawalMethod[];
+  email?: string;  // Předvyplní se z company.email
+  webFormUrl?: string;
+  phone?: string;
+  address?: string;  // Předvyplní se z company.address
+}
+
+export const WITHDRAWAL_METHOD_LABELS: Record<WithdrawalMethod, string> = {
+  email: 'E-mailem',
+  unsubscribe_link: 'Odkazem v newsletteru',
+  web_form: 'Formulářem na webu',
+  phone: 'Telefonicky',
+  post: 'Písemně poštou',
+  in_person: 'Osobně na provozovně',
+};
+
+// DPO - Pověřenec pro ochranu osobních údajů (čl. 37 GDPR)
+export interface DPOInfo {
+  name: string;
+  email: string;
+  phone?: string;
+}
+
 export interface DataRecipients {
   hasAccountant: boolean;
   hostingProvider?: string;
@@ -49,6 +84,26 @@ export interface DataRecipients {
   analyticsOther?: string;
   thirdCountryTransfer: boolean;
   thirdCountryName?: string;
+  // Nové: Detaily předávání do třetích zemí
+  thirdCountryServices?: ThirdCountryTransfer[];
+}
+
+// Předávání do třetích zemí s právním mechanismem
+export interface ThirdCountryTransfer {
+  serviceId: string;  // ID z third-country-services.ts nebo 'custom'
+  serviceName: string;
+  provider: string;
+  country: string;
+  safeguard: 'adequacy' | 'scc' | 'bcr' | 'derogation';
+  safeguardDescription: string;
+}
+
+// Konfigurace retenčních dob
+export interface RetentionSettings {
+  [purposeId: string]: {
+    months: number;
+    customNote?: string;
+  };
 }
 
 export interface WizardData {
@@ -57,6 +112,13 @@ export interface WizardData {
   collectedData: CollectedData;
   purposes: ProcessingPurposes;
   recipients: DataRecipients;
+  // Nové: DPO (Pověřenec pro ochranu osobních údajů)
+  hasDpo: boolean;
+  dpo?: DPOInfo;
+  // Nové: Způsoby odvolání souhlasu
+  consentWithdrawal: ConsentWithdrawal;
+  // Nové: Retenční doby
+  retentionSettings: RetentionSettings;
 }
 
 export const defaultWizardData: WizardData = {
@@ -96,6 +158,14 @@ export const defaultWizardData: WizardData = {
     analytics: 'none',
     thirdCountryTransfer: false,
   },
+  // Nové: DPO
+  hasDpo: false,
+  // Nové: Odvolání souhlasu - výchozí metody
+  consentWithdrawal: {
+    methods: ['email', 'unsubscribe_link'],
+  },
+  // Nové: Retenční doby - výchozí hodnoty
+  retentionSettings: {},
 };
 
 export const BUSINESS_TYPE_LABELS: Record<BusinessType, string> = {

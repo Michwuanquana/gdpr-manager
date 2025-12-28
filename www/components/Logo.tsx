@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 export default function Logo({ className = "h-8 w-8" }: { className?: string }) {
   return (
     <svg

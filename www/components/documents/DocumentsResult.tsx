@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 'use client';
 
 import { useState } from 'react';
@@ -10,6 +18,7 @@ import {
   generateInfoObligation,
   generateConsentForm,
   generateProcessingRecords,
+  generateIncidentProcedure,
 } from '@/lib/document-generator';
 import { exportToPdf, exportToDocx, exportAllToZip } from '@/lib/export';
 import { CheckCircle2, ChevronLeft, RotateCcw, Archive } from 'lucide-react';
@@ -20,7 +29,7 @@ interface DocumentsResultProps {
   onBack: () => void;
 }
 
-type DocumentType = 'privacy' | 'info' | 'consent' | 'records';
+type DocumentType = 'privacy' | 'info' | 'consent' | 'records' | 'incidents';
 
 interface DocumentInfo {
   id: DocumentType;
@@ -58,6 +67,13 @@ const documents: DocumentInfo[] = [
     description: 'Interní dokument dle čl. 30 GDPR',
     filename: 'zaznamy-o-cinnostech-zpracovani',
     generator: generateProcessingRecords,
+  },
+  {
+    id: 'incidents',
+    title: 'Směrnice pro řešení incidentů',
+    description: 'Postup při úniku dat dle čl. 33–34 GDPR',
+    filename: 'smernice-reseni-incidentu',
+    generator: generateIncidentProcedure,
   },
 ];
 
@@ -140,7 +156,7 @@ export function DocumentsResult({ data, onBack }: DocumentsResultProps) {
         </div>
         <h2 className="text-2xl font-bold text-primary mb-2">Vaše dokumenty jsou připraveny!</h2>
         <p className="text-muted-foreground">
-          Vygenerovali jsme pro vás 4 GDPR dokumenty na míru. Prohlédněte si je a stáhněte.
+          Vygenerovali jsme pro vás 5 GDPR dokumentů na míru. Prohlédněte si je a stáhněte.
         </p>
       </div>
 
@@ -150,7 +166,7 @@ export function DocumentsResult({ data, onBack }: DocumentsResultProps) {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
               <h3 className="font-semibold">Stáhnout všechny dokumenty</h3>
-              <p className="text-sm text-muted-foreground">Uložte si všechny 4 dokumenty najednou</p>
+              <p className="text-sm text-muted-foreground">Uložte si všechny dokumenty najednou</p>
             </div>
             <div className="flex gap-2">
               <Button
@@ -264,6 +280,10 @@ export function DocumentsResult({ data, onBack }: DocumentsResultProps) {
             <p className="text-gray-800 font-medium">
               Pokud vám to ušetřilo čas a nervy, můžete mi hodit na kafe. 
               Není to povinné, ale potěší to ☕
+            </p>
+            <p className="text-sm text-gray-600 mt-2 border-t pt-2">
+              💡 <strong>Tip:</strong> Šablony prošly nezávislým AI právním auditem. Více na{' '}
+              <a href="/audit" className="text-primary underline hover:no-underline">stránce /audit</a>.
             </p>
           </>
         }

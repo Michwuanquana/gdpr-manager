@@ -1,8 +1,16 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { X, Heart, Archive } from 'lucide-react';
+import { X, Heart, Archive, Copy, Check } from 'lucide-react';
 
 interface DonateModalProps {
   isOpen: boolean;
@@ -25,6 +33,15 @@ export function DonateModal({
 }: DonateModalProps) {
   const [donateAmount, setDonateAmount] = useState(200);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const accountNumber = '3370617044/3030';
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(accountNumber);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const generateQrCode = (amount: number) => {
     const qrData = `SPD*1.0*ACC:CZ2530300000003370617044*RN:ADAM%20PORYBNY*AM:${amount}.0*CC:CZK`;
@@ -103,6 +120,20 @@ export function DonateModal({
             <p className="text-xs text-gray-400 mt-2">
               Nebo kolik uznáte za vhodné 🙏
             </p>
+
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-[10px] uppercase tracking-wider text-gray-400 mb-1">Číslo účtu</p>
+              <div className="flex items-center justify-center gap-2 bg-white border border-gray-200 rounded-lg py-1.5 px-3">
+                <code className="text-sm font-mono text-gray-700">{accountNumber}</code>
+                <button 
+                  onClick={copyToClipboard}
+                  className="text-gray-400 hover:text-emerald-600 transition-colors"
+                  title="Kopírovat číslo účtu"
+                >
+                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         

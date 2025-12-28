@@ -1,3 +1,11 @@
+/*
+ * Copyright (c) 2025 GDPR Manager
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ */
+
 import type { Metadata } from 'next';
 import { Inter, Source_Serif_4, JetBrains_Mono } from 'next/font/google';
 import './globals.css';

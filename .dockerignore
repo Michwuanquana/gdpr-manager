@@ -2,3 +2,14 @@ node_modules
 .next
 .git
 *.log
+# www složka - ignorovat build artefakty
+www/node_modules
+www/.next
+www/.turbo
+www/out
+
+# Další
+.env*.local
+*.md
+!audit/*.md
+.DS_Store
