@@ -33,5 +33,8 @@ Thumbs.db
 *.pem
 *.tsbuildinfo
 
+# CLAUDE instructions
+CLAUDE.md
+
 # Instructions (internal docs)
 instructions/

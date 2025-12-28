@@ -17,9 +17,7 @@ describe('Step1Company', () => {
     address: '',
     ico: '',
     email: '',
-    phone: '',
-    web: '',
-    court: ''
+    web: ''
   };
 
   const mockOnChange = vi.fn();
